@@ -1,0 +1,18 @@
+version: '3.7'
+
+services:
+  portainer:
+    image: docker.io/portainer/portainer-ce
+    container_name: portainer
+    user: ${PORTAINER_USER}
+    ports:
+      - ${PORTAINER_PORT}
+    volumes:
+      - portainer_data:/data
+      - ${PORTAINER_SOCKET}:/var/run/docker.sock:Z
+
+networks:
+  portainer_network:
+
+volumes:
+  portainer_data:
