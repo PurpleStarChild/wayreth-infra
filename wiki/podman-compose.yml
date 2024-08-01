@@ -1,0 +1,12 @@
+services:
+  wayreth_wiki:
+    image: dokuwiki/dokuwiki:stable
+    container_name: wayreth_wiki
+    user: ${USER}
+    ports:
+      - ${WEB_PORT}
+    volumes:
+      - ${STORAGE_VOL}:/storage
+
+networks:
+  wayreth_wiki_net:
