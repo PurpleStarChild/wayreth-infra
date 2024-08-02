@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  podman-monitor:
+    container_name: podman-monitor
+    image: quay.io/navidys/prometheus-podman-exporter 
+    shm_size: 256mb
+    user: ${USER}
+    ports:
+      - ${COLLECTOR_PORT}
+    volumes:
+      - ${SOCKERT_MOUNT} 
+    environment:
+      - CONTAINER_HOST=${CONTAINER_HOST}
+    command:
+      - "-a"
+      - "--collector.enhance-metrics"
+      - "-b"
+      - "--web.disable-exporter-metrics"
