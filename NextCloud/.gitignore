@@ -1,0 +1,8 @@
+apps
+compose.yml.bak
+config
+data
+database
+.env
+.env.bak
+nextcloud
