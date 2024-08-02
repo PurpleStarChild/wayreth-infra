@@ -1,0 +1,3 @@
+cert/
+docker-data/
+mailserver.env

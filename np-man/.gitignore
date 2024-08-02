@@ -1,0 +1,6 @@
+
+#ignore database/data
+data/
+
+# protect letsencrypt certificates
+letsencrypt/
