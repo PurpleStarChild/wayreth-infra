@@ -9,6 +9,7 @@ services:
       - ${PORTAINER_PORT}
     volumes:
       - portainer_data:/data
+      - ${PODMAN_PORTAINER_SOCKET}:/var/run/podman.sock:Z
       - ${PORTAINER_SOCKET}:/var/run/docker.sock:Z
 
 networks:
