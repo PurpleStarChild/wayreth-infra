@@ -1,0 +1,5 @@
+# ignore the database and stored files
+data/
+.env
+conf/synapse.signing.key
+conf/homeserver.yaml
