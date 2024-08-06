@@ -49,10 +49,7 @@ services:
     restart: always
     networks:
       - metrics_net
-    
-    
-volumes:
-  grafana-data:
+
 
 networks:
   metrics_net:
