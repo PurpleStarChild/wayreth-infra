@@ -6,3 +6,4 @@ database
 .env
 .env.bak
 nextcloud
+redis
