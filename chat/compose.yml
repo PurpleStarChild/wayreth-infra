@@ -1,0 +1,56 @@
+version: '3'
+services:
+  db:
+    image: docker.io/library/postgres:16-alpine
+    container_name: synapse_db
+    hostname: db
+    shm_size: 256mb
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST_AUTH_METHOD: ${POSTGRES_HOST_AUTH_METHOD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_INITDB_ARGS: --encoding=UTF-8 --lc-collate=C --lc-ctype=C
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'postgres']
+    networks:
+      - chat-net
+
+  synapse:
+    image: docker.io/matrixdotorg/synapse:latest
+    volumes:
+      - ./data:/data
+      - ./conf/homeserver.yaml:/data/homeserver.yaml
+      - ./conf/synapse.log.yml:/conf/log.config
+      - ./conf/synapse.signing.key:/conf/signing.key
+    shm_size: 256mb
+    ports:
+      - ${CHAT_PORT}
+    #entrypoint: ["/start.py", "run", "--config-path=/conf/homeserver.yaml"]
+    networks:
+      - chat-net
+  backup:
+    image: postgres:16-alpine
+    container_name: chat_backup
+    depends_on:
+      - db
+    volumes:
+      - /backup-db/chat_db:/backup
+    command: >
+      bash -c "while true; do
+        PGPASSWORD=$$POSTGRES_PASSWORD pg_dump -h db -U $$POSTGRES_USER -Fc $$POSTGRES_DB > /backup/$$(date +%Y-%m-%d-%H-%M-%S).dump
+        echo ""Backup done at $$(date +%Y-%m-%d_%H:%M:%S)""
+        ls -1 /backup/*.dump | head -n -2 | xargs rm -f
+        sleep 86400
+      done"
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+    networks:
+      - chat-net
+
+networks:
+  chat-net:
