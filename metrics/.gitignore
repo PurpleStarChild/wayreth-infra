@@ -1,6 +1,6 @@
 .terraform/
 data/
-config/influx/influx-configs/
+config/influx/influx-configs
 victoria-storage/
 
 # individual files

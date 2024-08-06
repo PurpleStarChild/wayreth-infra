@@ -1,0 +1,64 @@
+version: '3'
+services:
+  influxdb:
+    image: influxdb
+    shm_size: 256mb
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+    volumes:
+      - ./data/influx:/var/lib/influxdb2
+      - ./config/influx:/etc/influxdb2
+    networks:
+      - metrics_net
+
+  grafana:
+    image: grafana/grafana
+    shm_size: 256mb
+    container_name: grafana
+    ports:
+      - ${GRAFANA_PORTS}
+    volumes:
+      - ./data/grafana:/var/lib/grafana
+    networks:
+      - metrics_net
+    environment:
+      GF_SERVER_ROOT_URL: ${GF_SERVER_ROOT_URL}
+      GF_AUTH_GENERIC_OAUTH_ENABLED: ${GF_AUTH_GENERIC_OAUTH_ENABLED}
+      GF_AUTH_GENERIC_OAUTH_NAME: ${GF_AUTH_GENERIC_OAUTH_NAME}
+      GF_AUTH_GENERIC_OAUTH_CLIENT_ID: ${GF_AUTH_GENERIC_OAUTH_CLIENT_ID}
+      GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET: ${GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET}
+      GF_AUTH_GENERIC_OAUTH_SCOPES: ${GF_AUTH_GENERIC_OAUTH_SCOPES}
+      GF_AUTH_GENERIC_OAUTH_AUTH_URL: ${GF_AUTH_GENERIC_OAUTH_AUTH_URL}
+      GF_AUTH_GENERIC_OAUTH_TOKEN_URL: ${GF_AUTH_GENERIC_OAUTH_TOKEN_URL}
+      GF_AUTH_GENERIC_OAUTH_API_URL: ${GF_AUTH_GENERIC_OAUTH_API_URL}
+      GF_AUTH_SIGNOUT_REDIRECT_URL: ${GF_AUTH_SIGNOUT_REDIRECT_URL}
+      # Optionally enable auto-login (bypasses Grafana login screen)
+      GF_AUTH_OAUTH_AUTO_LOGIN: ${GF_AUTH_OAUTH_AUTO_LOGIN}
+      # Optionally map user groups to Grafana roles
+      GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH: ${GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH}
+
+  victoria-metrics:
+    image: victoriametrics/victoria-metrics:latest
+    container_name: victoria-metrics
+    shm_size: 256mb
+    ports:
+      - ${VICTORIA_METRICS_PORT}
+    volumes:
+      - ./victoria-storage:/victoria-metrics-data
+    restart: always
+    networks:
+      - metrics_net
+    
+    
+volumes:
+  grafana-data:
+
+networks:
+  metrics_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: ${METRICS_SUBNET}
+          gateway: ${METRICS_GATEWAY}
