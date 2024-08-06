@@ -1,0 +1,8 @@
+# ignore sensitive directories
+certs/
+vol/
+media/
+custom-templates/
+
+# ignore env file
+.env
